@@ -1,0 +1,43 @@
+{{#paper-tabs
+   primary=true
+   center=true
+   stretch=true
+   borderBottom=true
+   selected=selectedBasicTab
+   onChange=(action (mut selectedBasicTab)) as |tabs|}}
+    {{#tabs.tab value="table"}}
+        Tabelle
+    {{/tabs.tab}}
+    {{#tabs.tab value="addResult"}}
+        Ergebnis eintragen
+    {{/tabs.tab}}
+{{/paper-tabs}}
+
+
+{{#liquid-bind (hash tab=selectedBasicTab) class="md-padding" as |current|}}
+    {{#if (eq current.tab "addResult")}}
+
+    {{else}}
+        {{#if fetchTable.isIdle}}
+            {{#each sortedTable as |entry|}}
+                {{#paper-card class="md-hue-2" as |card|}}
+                    {{#card.title as |title|}}
+                        {{#title.text as |text|}}
+                            {{#text.headline}}{{entry.name}}{{/text.headline}}
+                            {{#text.subhead}}{{entry.value}}{{/text.subhead}}
+                        {{/title.text}}
+                        {{title.media size="sm" src=entry.url}}
+                    {{/card.title}}
+                    {{#card.actions}}
+                        {{#paper-button}}Herausfordern{{/paper-button}}
+                    {{/card.actions}}
+                {{/paper-card}}
+                
+            {{/each}}
+        {{else}}
+            {{paper-progress-circular class="md-hue-2" diameter=125}}
+
+        {{/if}}
+    {{/if}}
+{{/liquid-bind}}
+{{outlet}}
