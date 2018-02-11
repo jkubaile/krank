@@ -8,35 +8,65 @@
     {{#tabs.tab value="table"}}
         Tabelle
     {{/tabs.tab}}
-    {{#tabs.tab value="addResult"}}
-        Ergebnis eintragen
+    {{#tabs.tab value="results"}}
+        Ergebnisse
     {{/tabs.tab}}
 {{/paper-tabs}}
 
 
-{{#liquid-bind (hash tab=selectedBasicTab) class="md-padding" as |current|}}
-    {{#if (eq current.tab "addResult")}}
+{{#each listData as |item|}}
+    {{#paper-item onClick=(action "goToPerson" item) as |controls|}}
+        <img src={{item.img}} alt={{item.name}} class="md-avatar">
+        <p>{{item.name}}</p>
+        <div class="md-secondary-container">
+            {{controls.checkbox value=item.checked onChange=(action (mut item.checked))}}
+            {{#controls.button secondary=true iconButton=true onClick=(action "secondaryMessageClick" item)}}
+                {{paper-icon "email"}}
+            {{/controls.button}}
+            {{#controls.button secondary=true iconButton=true onClick=(action "secondaryMessageClick" item)}}
+                {{paper-icon "message"}}
+            {{/controls.button}}
+        </div>
+    {{/paper-item}}
+{{/each}}
 
-    {{else}}
-        {{#if fetchTable.isIdle}}
-            {{#each sortedTable as |entry|}}
-                {{#paper-card class="md-hue-2" as |card|}}
-                    {{#card.title as |title|}}
-                        {{#title.text as |text|}}
-                            {{#text.headline}}{{entry.name}}{{/text.headline}}
-                            {{#text.subhead}}{{entry.value}}{{/text.subhead}}
-                        {{/title.text}}
-                        {{title.media size="sm" src=entry.url}}
-                    {{/card.title}}
-                    {{#card.actions}}
-                        {{#paper-button}}Herausfordern{{/paper-button}}
-                    {{/card.actions}}
-                {{/paper-card}}
-                
-            {{/each}}
+{{#liquid-bind (hash tab=selectedBasicTab) class="md-padding" as |current|}}
+    {{#if (eq current.tab "results")}}
+        {{#if fetchLogs.isIdle}}
+            {{#paper-list}}
+                {{#each formatedLogs as |log|}}
+                    {{#paper-item class="md-2-line"}}
+                        <img src={{log.winner1Url}} class="md-avatar">
+                        <img src={{log.winner2Url}} class="md-avatar">
+                        {{paper-icon "swap-horiz"}}
+                        <img src={{log.looser1Url}} class="md-avatar">
+                        <img src={{log.looser2Url}} class="md-avatar">
+                    {{/paper-item}}
+                {{/each}}
+            {{/paper-list}}
         {{else}}
             {{paper-progress-circular class="md-hue-2" diameter=125}}
+        {{/if}}
 
+    {{else}}
+    {{#if fetchTable.isIdle}}
+        {{#each sortedTable as |entry|}}
+            {{#paper-card class="md-hue-2" as |card|}}
+                {{#card.title as |title|}}
+                    {{#title.text as |text|}}
+                        {{#text.headline}}{{entry.name}}{{/text.headline}}
+                        {{#text.subhead}}{{entry.value}}{{/text.subhead}}
+                    {{/title.text}}
+                    {{title.media size="sm" src=entry.url}}
+                {{/card.title}}
+                {{#card.actions}}
+                    {{#paper-button}}Herausfordern{{/paper-button}}
+                {{/card.actions}}
+            {{/paper-card}}
+            
+        {{/each}}
+        {{else}}
+            {{paper-progress-circular class="md-hue-2" diameter=125}}
         {{/if}}
     {{/if}}
 {{/liquid-bind}}
